@@ -5,7 +5,14 @@ import librosa
 import os
 import json
 import tempfile
+import torch
+from torch.serialization import add_safe_globals
+from TTS.tts.configs.xtts_config import XttsConfig
+from TTS.tts.configs.vits_config import VitsConfig
 from openvoice_wrapper import synthesize_openvoice
+
+# Allow loading checkpoints that include config objects
+add_safe_globals([XttsConfig, VitsConfig])
 
 # Default model and additional high quality TTS models
 DEFAULT_MODEL = "tts_models/en/vctk/vits"
