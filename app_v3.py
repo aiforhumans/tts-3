@@ -67,12 +67,12 @@ def synthesize(text, model_label, speaker_id, emotion, pitch, speed):
     else:
         with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmpfile:
             tmpfile_path = tmpfile.name
-            tts.tts_to_file(
-                text=text,
-                file_path=tmpfile_path,
-                speaker=speaker_id,
-                emotion=emotion if hasattr(tts, "is_multi_emotion") and tts.is_multi_emotion else None,
-            )
+            tts_kwargs = {"text": text, "file_path": tmpfile_path}
+            if tts.is_multi_speaker:
+                tts_kwargs["speaker"] = speaker_id
+            if hasattr(tts, "is_multi_emotion") and tts.is_multi_emotion:
+                tts_kwargs["emotion"] = emotion
+            tts.tts_to_file(**tts_kwargs)
 
         y, sr = librosa.load(tmpfile_path, sr=None)
         y_shifted = librosa.effects.pitch_shift(y=y, sr=sr, n_steps=pitch)
