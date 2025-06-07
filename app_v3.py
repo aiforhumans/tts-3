@@ -33,7 +33,9 @@ if not os.path.exists(PROFILES_FILE):
 
 # Current TTS model instance
 tts = TTS(model_name=DEFAULT_MODEL, progress_bar=False)
-tts.to("cuda")
+# Use GPU if available, otherwise fall back to CPU
+device = "cuda" if torch.cuda.is_available() else "cpu"
+tts.to(device)
 current_model = DEFAULT_MODEL
 
 def load_tts_model(model_name):
@@ -42,7 +44,9 @@ def load_tts_model(model_name):
     if model_name == current_model:
         return gr.update()
     tts = TTS(model_name=model_name, progress_bar=False)
-    tts.to("cuda")
+    # Move to GPU if available, otherwise stay on CPU
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    tts.to(device)
     current_model = model_name
     speakers = (
         tts.speakers if tts.is_multi_speaker else ["default"]
