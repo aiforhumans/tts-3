@@ -41,21 +41,22 @@ def synthesize(text, speaker_id, emotion, pitch, speed):
 
     else:
         with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmpfile:
+            tmpfile_path = tmpfile.name
             tts.tts_to_file(
                 text=text,
-                file_path=tmpfile.name,
+                file_path=tmpfile_path,
                 speaker=speaker_id,
-                emotion = emotion if hasattr(tts, "is_multi_emotion") and tts.is_multi_emotion else None,
-
+                emotion=emotion if hasattr(tts, "is_multi_emotion") and tts.is_multi_emotion else None,
             )
-            y, sr = librosa.load(tmpfile.name, sr=None)
-            y_shifted = librosa.effects.pitch_shift(y=y, sr=sr, n_steps=pitch)
-            y_stretched = librosa.effects.time_stretch(y_shifted, rate=speed)
-            sf.write(tmpfile.name, y_stretched, sr)
 
-            history_path = os.path.join(HISTORY_DIR, os.path.basename(tmpfile.name))
-            os.rename(tmpfile.name, history_path)
-            return history_path
+        y, sr = librosa.load(tmpfile_path, sr=None)
+        y_shifted = librosa.effects.pitch_shift(y=y, sr=sr, n_steps=pitch)
+        y_stretched = librosa.effects.time_stretch(y_shifted, rate=speed)
+        sf.write(tmpfile_path, y_stretched, sr)
+
+        history_path = os.path.join(HISTORY_DIR, os.path.basename(tmpfile_path))
+        os.rename(tmpfile_path, history_path)
+        return history_path
 
 def save_profile(profile_name, speaker_id, emotion, pitch, speed):
     profiles[profile_name] = {
