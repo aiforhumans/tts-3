@@ -1,8 +1,6 @@
 import torch
 import torchaudio
-import os
 
-OPENVOICE_MODEL_PATH = "models/OpenVoice"
 
 def synthesize_openvoice(text, speaker_wav_path, output_wav_path):
     print(f"[OpenVoice] Synthesizing: '{text}' with speaker: {speaker_wav_path}")
