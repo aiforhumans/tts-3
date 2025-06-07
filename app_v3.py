@@ -70,6 +70,14 @@ def synthesize(text, model_label, speaker_id, emotion, pitch, speed):
     load_tts_model(model_name)
     if speaker_id in openvoice_speakers:
         speaker_wav = openvoice_speakers[speaker_id]
+        if not os.path.isfile(speaker_wav):
+            msg = f"Speaker WAV file not found: {speaker_wav}"
+            try:
+                gr.Warning(msg)
+            finally:
+                print(msg)
+            return None
+
         with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmpfile:
             tmpfile_path = tmpfile.name
         synthesize_openvoice(text, speaker_wav, tmpfile_path)
