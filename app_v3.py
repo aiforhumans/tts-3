@@ -28,11 +28,18 @@ tts = TTS(model_name=DEFAULT_MODEL, progress_bar=False)
 tts.to("cuda")
 current_model = DEFAULT_MODEL
 
-def load_tts_model(model_name):
+def load_tts_model(model_label):
     """Load selected TTS model and update speaker list."""
     global tts, current_model, speakers
+    model_name = MODEL_NAME_MAP.get(model_label, model_label)
     if model_name == current_model:
         return gr.update()
+    try:
+        from TTS.tts.configs.xtts_config import XttsConfig
+        import torch.serialization
+        torch.serialization.add_safe_globals([XttsConfig])
+    except Exception:
+        pass
     tts = TTS(model_name=model_name, progress_bar=False)
     tts.to("cuda")
     current_model = model_name
@@ -53,8 +60,7 @@ speakers = (tts.speakers if tts.is_multi_speaker else ["default"]) + list(openvo
 
 def synthesize(text, model_label, speaker_id, emotion, pitch, speed):
     # Load the requested model if different
-    model_name = MODEL_NAME_MAP.get(model_label, DEFAULT_MODEL)
-    load_tts_model(model_name)
+    load_tts_model(model_label)
     if speaker_id in openvoice_speakers:
         speaker_wav = openvoice_speakers[speaker_id]
         with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmpfile:
