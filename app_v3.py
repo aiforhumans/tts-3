@@ -9,10 +9,11 @@ import torch
 from torch.serialization import add_safe_globals
 from TTS.tts.configs.xtts_config import XttsConfig
 from TTS.tts.configs.vits_config import VitsConfig
+from TTS.tts.models.xtts import XttsAudioConfig
 from openvoice_wrapper import synthesize_openvoice
 
 # Allow loading checkpoints that include config objects
-add_safe_globals([XttsConfig, VitsConfig])
+add_safe_globals([XttsConfig, XttsAudioConfig, VitsConfig])
 
 # Default model and additional high quality TTS models
 DEFAULT_MODEL = "tts_models/en/vctk/vits"
@@ -47,6 +48,11 @@ def load_tts_model(model_name):
         tts.speakers if tts.is_multi_speaker else ["default"]
     ) + list(openvoice_speakers.keys())
     return gr.update(choices=speakers, value=speakers[0])
+
+def on_model_change(model_label):
+    """Handle model dropdown change by mapping label to model name."""
+    model_name = MODEL_NAME_MAP.get(model_label, DEFAULT_MODEL)
+    return load_tts_model(model_name)
 
 with open(PROFILES_FILE, "r") as f:
     profiles = json.load(f)
@@ -144,7 +150,7 @@ with gr.Blocks() as demo:
     )
 
     model_dropdown.change(
-        load_tts_model,
+        on_model_change,
         inputs=[model_dropdown],
         outputs=[speaker_dropdown],
     )
