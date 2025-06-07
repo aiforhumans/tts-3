@@ -5,7 +5,6 @@ import librosa
 import os
 import json
 import tempfile
-import torch
 from torch.serialization import add_safe_globals
 from TTS.tts.configs.xtts_config import XttsConfig
 from TTS.tts.configs.vits_config import VitsConfig
