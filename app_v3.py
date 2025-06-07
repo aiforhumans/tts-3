@@ -7,7 +7,14 @@ import json
 import tempfile
 from openvoice_wrapper import synthesize_openvoice
 
-MODEL_NAME = "tts_models/en/vctk/vits"
+# Default model and additional high quality TTS models
+DEFAULT_MODEL = "tts_models/en/vctk/vits"
+AVAILABLE_MODELS = [
+    ("VITS VCTK (English)", "tts_models/en/vctk/vits"),
+    ("Jenny (English)", "tts_models/en/jenny/jenny"),
+    ("XTTS v2 (Multilingual)", "tts_models/multilingual/multi-dataset/xtts_v2"),
+]
+MODEL_NAME_MAP = dict(AVAILABLE_MODELS)
 HISTORY_DIR = "history"
 os.makedirs(HISTORY_DIR, exist_ok=True)
 
@@ -16,8 +23,23 @@ if not os.path.exists(PROFILES_FILE):
     with open(PROFILES_FILE, "w") as f:
         json.dump({}, f)
 
-tts = TTS(model_name=MODEL_NAME, progress_bar=False)
+# Current TTS model instance
+tts = TTS(model_name=DEFAULT_MODEL, progress_bar=False)
 tts.to("cuda")
+current_model = DEFAULT_MODEL
+
+def load_tts_model(model_name):
+    """Load selected TTS model and update speaker list."""
+    global tts, current_model, speakers
+    if model_name == current_model:
+        return gr.Dropdown.update()
+    tts = TTS(model_name=model_name, progress_bar=False)
+    tts.to("cuda")
+    current_model = model_name
+    speakers = (
+        tts.speakers if tts.is_multi_speaker else ["default"]
+    ) + list(openvoice_speakers.keys())
+    return gr.Dropdown.update(choices=speakers, value=speakers[0])
 
 with open(PROFILES_FILE, "r") as f:
     profiles = json.load(f)
@@ -29,15 +51,18 @@ openvoice_speakers = {
 
 speakers = (tts.speakers if tts.is_multi_speaker else ["default"]) + list(openvoice_speakers.keys())
 
-def synthesize(text, speaker_id, emotion, pitch, speed):
+def synthesize(text, model_label, speaker_id, emotion, pitch, speed):
+    # Load the requested model if different
+    model_name = MODEL_NAME_MAP.get(model_label, DEFAULT_MODEL)
+    load_tts_model(model_name)
     if speaker_id in openvoice_speakers:
         speaker_wav = openvoice_speakers[speaker_id]
         with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmpfile:
-            sf.write(tmpfile.name, y_shifted, sr)
             tmpfile_path = tmpfile.name
-            return history_path
-        
+        synthesize_openvoice(text, speaker_wav, tmpfile_path)
+        history_path = os.path.join(HISTORY_DIR, os.path.basename(tmpfile_path))
         os.rename(tmpfile_path, history_path)
+        return history_path
 
     else:
         with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmpfile:
@@ -78,6 +103,13 @@ with gr.Blocks() as demo:
 
     with gr.Row():
         text_input = gr.Textbox(label="Enter text", lines=4, placeholder="Type something...")
+
+    with gr.Row():
+        model_dropdown = gr.Dropdown(
+            choices=[label for label, _ in AVAILABLE_MODELS],
+            value=AVAILABLE_MODELS[0][0],
+            label="TTS Model",
+        )
     
     with gr.Row():
         speaker_dropdown = gr.Dropdown(choices=speakers, value=speakers[0], label="Speaker")
@@ -100,8 +132,14 @@ with gr.Blocks() as demo:
 
     synth_button.click(
         synthesize,
-        inputs=[text_input, speaker_dropdown, emotion_slider, pitch_slider, speed_slider],
+        inputs=[text_input, model_dropdown, speaker_dropdown, emotion_slider, pitch_slider, speed_slider],
         outputs=[audio_output],
+    )
+
+    model_dropdown.change(
+        load_tts_model,
+        inputs=[model_dropdown],
+        outputs=[speaker_dropdown],
     )
 
     save_profile_button.click(

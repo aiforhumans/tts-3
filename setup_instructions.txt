@@ -1,4 +1,4 @@
-# Setup Instructions for Advanced Local TTS Studio V3.1
+# Setup Instructions for Advanced Local TTS Studio V3.2
 
 ## 1️⃣ Install PyTorch Nightly with CUDA 12.8:
 
@@ -20,5 +20,7 @@ They will appear as "Clone: Name" in speaker dropdown.
 ## Notes:
 
 - Gradio is pinned to 4.38.0 (known stable for advanced Blocks apps)
-- OpenVoice integration is ready via openvoice_wrapper.py
-- You can expand openvoice_wrapper.py to run full OpenVoice inference
+- Several high quality TTS models are available. Choose one from the drop-down
+  menu when launching the app.
+- OpenVoice integration is ready via openvoice_wrapper.py. You can expand it to
+  run full OpenVoice inference.
