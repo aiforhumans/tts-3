@@ -32,14 +32,14 @@ def load_tts_model(model_name):
     """Load selected TTS model and update speaker list."""
     global tts, current_model, speakers
     if model_name == current_model:
-        return gr.Dropdown.update()
+        return gr.update()
     tts = TTS(model_name=model_name, progress_bar=False)
     tts.to("cuda")
     current_model = model_name
     speakers = (
         tts.speakers if tts.is_multi_speaker else ["default"]
     ) + list(openvoice_speakers.keys())
-    return gr.Dropdown.update(choices=speakers, value=speakers[0])
+    return gr.update(choices=speakers, value=speakers[0])
 
 with open(PROFILES_FILE, "r") as f:
     profiles = json.load(f)
@@ -92,7 +92,7 @@ def save_profile(profile_name, speaker_id, emotion, pitch, speed):
     }
     with open(PROFILES_FILE, "w") as f:
         json.dump(profiles, f, indent=4)
-    return gr.Dropdown.update(choices=list(profiles.keys()))
+    return gr.update(choices=list(profiles.keys()))
 
 def load_profile(profile_name):
     p = profiles.get(profile_name, {})
