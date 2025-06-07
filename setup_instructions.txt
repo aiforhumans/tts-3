@@ -24,3 +24,4 @@ They will appear as "Clone: Name" in speaker dropdown.
   menu when launching the app.
 - OpenVoice integration is ready via openvoice_wrapper.py. You can expand it to
   run full OpenVoice inference.
+- If CUDA is not available, the app automatically falls back to CPU execution.
