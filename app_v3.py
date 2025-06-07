@@ -32,21 +32,24 @@ speakers = (tts.speakers if tts.is_multi_speaker else ["default"]) + list(openvo
 def synthesize(text, speaker_id, emotion, pitch, speed):
     if speaker_id in openvoice_speakers:
         speaker_wav = openvoice_speakers[speaker_id]
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmpfile:
-            synthesize_openvoice(text, speaker_wav, tmpfile.name)
-            history_path = os.path.join(HISTORY_DIR, os.path.basename(tmpfile.name))
-            os.rename(tmpfile.name, history_path)
+        with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmpfile:
+            sf.write(tmpfile.name, y_shifted, sr)
+            tmpfile_path = tmpfile.name
             return history_path
+        
+        os.rename(tmpfile_path, history_path)
+
     else:
         with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as tmpfile:
             tts.tts_to_file(
                 text=text,
                 file_path=tmpfile.name,
                 speaker=speaker_id,
-                emotion=emotion if tts.is_multi_emotion else None,
+                emotion = emotion if hasattr(tts, "is_multi_emotion") and tts.is_multi_emotion else None,
+
             )
             y, sr = librosa.load(tmpfile.name, sr=None)
-            y_shifted = librosa.effects.pitch_shift(y, sr, n_steps=pitch)
+            y_shifted = librosa.effects.pitch_shift(y=y, sr=sr, n_steps=pitch)
             y_stretched = librosa.effects.time_stretch(y_shifted, rate=speed)
             sf.write(tmpfile.name, y_stretched, sr)
 

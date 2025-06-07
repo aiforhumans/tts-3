@@ -1,9 +1,20 @@
+# --- Core PyTorch Nightly with CUDA 12.8 ---
+# You MUST install this one manually first via command:
+# pip3 install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu128
+
+# --- Coqui TTS ---
 TTS==0.22.0
-gradio==4.38.0
+
+# --- Gradio ---
+gradio==5.33.0
+
+# --- Audio Processing ---
 soundfile==0.12.1
 librosa==0.10.1
-torch==2.1.2+cu121
-torchaudio==2.1.2
+
+# --- OpenVoice dependencies ---
 transformers>=4.36.0
 fairseq==0.12.2
+
+# --- Utility ---
 numpy

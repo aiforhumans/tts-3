@@ -1,0 +1,24 @@
+# Setup Instructions for Advanced Local TTS Studio V3.1
+
+## 1️⃣ Install PyTorch Nightly with CUDA 12.8:
+
+pip3 install --pre torch torchvision torchaudio --index-url https://download.pytorch.org/whl/nightly/cu128
+
+## 2️⃣ Install remaining requirements:
+
+pip install -r requirements.txt
+
+## 3️⃣ Run the app:
+
+python app_v3.py
+
+## 4️⃣ Add cloned voices:
+
+Put WAV files in /clones/ folder.
+They will appear as "Clone: Name" in speaker dropdown.
+
+## Notes:
+
+- Gradio is pinned to 4.38.0 (known stable for advanced Blocks apps)
+- OpenVoice integration is ready via openvoice_wrapper.py
+- You can expand openvoice_wrapper.py to run full OpenVoice inference
