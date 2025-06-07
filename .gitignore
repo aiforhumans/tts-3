@@ -1,1 +1,10 @@
 .venv
+# Python cache
+__pycache__/
+*.py[cod]
+# Gradio
+.gradio/
+# History
+history/
+# Audio files
+*.wav
