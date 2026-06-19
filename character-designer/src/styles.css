@@ -1,0 +1,122 @@
+:root {
+  --bg: #0e1118;
+  --surface: #151b26;
+  --surface-2: #1c2432;
+  --text: #e8edf8;
+  --muted: #9fb0cc;
+  --accent: #69a8ff;
+  --border: #2a364b;
+}
+
+body[data-theme="light"] {
+  --bg: #f5f7fb;
+  --surface: #ffffff;
+  --surface-2: #f4f6fa;
+  --text: #111827;
+  --muted: #4b5563;
+  --accent: #2563eb;
+  --border: #d5dceb;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.topbar {
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.topbar h1 { margin: 0; font-size: 1.2rem; }
+
+button {
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  padding: 0.5rem 0.8rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+button:hover { border-color: var(--accent); }
+
+#app {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.panel {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.panel h2 { margin-top: 0; font-size: 1rem; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.field.full { grid-column: 1 / -1; }
+
+input, textarea, select {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--text);
+  padding: 0.45rem 0.6rem;
+}
+
+textarea { min-height: 90px; resize: vertical; }
+
+.row { display: flex; gap: 0.5rem; align-items: center; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+.chip {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.25rem 0.65rem;
+  background: var(--surface-2);
+  cursor: pointer;
+}
+
+.preview {
+  white-space: pre-wrap;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.avatar-preview {
+  width: 100%;
+  max-width: 220px;
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+@media (max-width: 1000px) {
+  #app { grid-template-columns: 1fr; }
+}
