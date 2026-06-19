@@ -20,7 +20,7 @@ Free open-source character designer for AI roleplay chats.
 - Live system prompt preview while typing
 
 ## Usage
-1. Open `/home/runner/work/tts-3/tts-3/character-designer/public/index.html` in a browser.
+1. Open `character-designer/public/index.html` in a browser.
 2. Build your character profile.
 3. Import existing cards from the import panel or export using the export panel.
 
